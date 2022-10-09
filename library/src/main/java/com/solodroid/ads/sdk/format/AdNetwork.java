@@ -12,6 +12,7 @@ import static com.solodroid.ads.sdk.util.Constant.UNITY;
 
 import android.app.Activity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinSdk;
@@ -22,10 +23,6 @@ import com.mopub.common.SdkConfiguration;
 import com.mopub.common.SdkInitializationListener;
 import com.mopub.mobileads.FacebookBanner;
 import com.solodroid.ads.sdk.helper.AudienceNetworkInitializeHelper;
-import com.startapp.sdk.adsbase.StartAppAd;
-import com.startapp.sdk.adsbase.StartAppSDK;
-import com.unity3d.ads.IUnityAdsInitializationListener;
-import com.unity3d.ads.UnityAds;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -115,25 +112,8 @@ public class AdNetwork {
                         });
                         AudienceNetworkInitializeHelper.initialize(activity);
                         break;
-                    case STARTAPP:
-                        StartAppSDK.init(activity, startappAppId, false);
-                        StartAppSDK.setTestAdsEnabled(debug);
-                        StartAppAd.disableSplash();
-                        StartAppSDK.setUserConsent(activity, "pas", System.currentTimeMillis(), true);
-                        break;
-                    case UNITY:
-                        UnityAds.initialize(activity.getApplicationContext(), unityGameId, debug, new IUnityAdsInitializationListener() {
-                            @Override
-                            public void onInitializationComplete() {
-                                Log.d(TAG, "Unity Ads Initialization Complete with ID : " + unityGameId);
-                            }
 
-                            @Override
-                            public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
-                                Log.d(TAG, "Unity Ads Initialization Failed: [" + error + "] " + message);
-                            }
-                        });
-                        break;
+
                     case APPLOVIN:
                     case APPLOVIN_MAX:
                         AppLovinSdk.getInstance(activity).setMediationProvider(AppLovinMediationProvider.MAX);
@@ -152,6 +132,10 @@ public class AdNetwork {
                         SdkConfiguration.Builder configBuilder = new SdkConfiguration.Builder(mopubBannerId);
                         configBuilder.withMediatedNetworkConfiguration(FacebookBanner.class.getName(), facebookBanner);
                         MoPub.initializeSdk(activity, configBuilder.build(), initSdkListener());
+                        break;
+
+                    default:
+                        Toast.makeText(activity, "Please Select correct ad network", Toast.LENGTH_SHORT).show();
                         break;
                 }
                 Log.d(TAG, "[" + adNetwork + "] is selected as Primary Ads");
@@ -172,25 +156,8 @@ public class AdNetwork {
                         });
                         AudienceNetworkInitializeHelper.initialize(activity);
                         break;
-                    case STARTAPP:
-                        StartAppSDK.init(activity, startappAppId, false);
-                        StartAppSDK.setTestAdsEnabled(debug);
-                        StartAppAd.disableSplash();
-                        StartAppSDK.setUserConsent(activity, "pas", System.currentTimeMillis(), true);
-                        break;
-                    case UNITY:
-                        UnityAds.initialize(activity.getApplicationContext(), unityGameId, debug, new IUnityAdsInitializationListener() {
-                            @Override
-                            public void onInitializationComplete() {
-                                Log.d(TAG, "Unity Ads Initialization Complete with ID : " + unityGameId);
-                            }
 
-                            @Override
-                            public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
-                                Log.d(TAG, "Unity Ads Initialization Failed: [" + error + "] " + message);
-                            }
-                        });
-                        break;
+
                     case APPLOVIN:
                     case APPLOVIN_MAX:
                         AppLovinSdk.getInstance(activity).setMediationProvider(AppLovinMediationProvider.MAX);
@@ -213,6 +180,10 @@ public class AdNetwork {
 
                     case NONE:
                         //do nothing
+                        break;
+
+                    default:
+                        Toast.makeText(activity, "Please Select correct ad network", Toast.LENGTH_SHORT).show();
                         break;
                 }
                 Log.d(TAG, "[" + backupAdNetwork + "] is selected as Backup Ads");

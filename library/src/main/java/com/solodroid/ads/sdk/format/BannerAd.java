@@ -7,10 +7,6 @@ import static com.solodroid.ads.sdk.util.Constant.APPLOVIN_DISCOVERY;
 import static com.solodroid.ads.sdk.util.Constant.APPLOVIN_MAX;
 import static com.solodroid.ads.sdk.util.Constant.MOPUB;
 import static com.solodroid.ads.sdk.util.Constant.NONE;
-import static com.solodroid.ads.sdk.util.Constant.STARTAPP;
-import static com.solodroid.ads.sdk.util.Constant.UNITY;
-import static com.solodroid.ads.sdk.util.Constant.UNITY_ADS_BANNER_HEIGHT_MEDIUM;
-import static com.solodroid.ads.sdk.util.Constant.UNITY_ADS_BANNER_WIDTH_MEDIUM;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -19,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -40,11 +37,6 @@ import com.mopub.mobileads.MoPubView;
 import com.solodroid.ads.sdk.R;
 import com.solodroid.ads.sdk.helper.AppLovinCustomEventBanner;
 import com.solodroid.ads.sdk.util.Tools;
-import com.startapp.sdk.ads.banner.Banner;
-import com.startapp.sdk.ads.banner.BannerListener;
-import com.unity3d.services.banners.BannerErrorInfo;
-import com.unity3d.services.banners.BannerView;
-import com.unity3d.services.banners.UnityBannerSize;
 
 public class BannerAd {
 
@@ -178,66 +170,6 @@ public class BannerAd {
                         });
                         Log.d(TAG, adNetwork + " Banner Ad unit Id : " + adMobBannerId);
                         break;
-
-                    case STARTAPP:
-                        RelativeLayout startAppAdView = activity.findViewById(R.id.startapp_banner_view_container);
-                        Banner banner = new Banner(activity, new BannerListener() {
-                            @Override
-                            public void onReceiveAd(View banner) {
-                                startAppAdView.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void onFailedToReceiveAd(View banner) {
-                                startAppAdView.setVisibility(View.GONE);
-                                loadBackupBannerAd();
-                                Log.d(TAG, adNetwork + " failed load startapp banner ad : ");
-                            }
-
-                            @Override
-                            public void onImpression(View view) {
-
-                            }
-
-                            @Override
-                            public void onClick(View banner) {
-                            }
-                        });
-                        startAppAdView.addView(banner);
-                        break;
-
-                    case UNITY:
-                        RelativeLayout unityAdView = activity.findViewById(R.id.unity_banner_view_container);
-                        BannerView bottomBanner = new BannerView(activity, unityBannerId, new UnityBannerSize(UNITY_ADS_BANNER_WIDTH_MEDIUM, UNITY_ADS_BANNER_HEIGHT_MEDIUM));
-                        bottomBanner.setListener(new BannerView.IListener() {
-                            @Override
-                            public void onBannerLoaded(BannerView bannerView) {
-                                unityAdView.setVisibility(View.VISIBLE);
-                                Log.d("Unity_banner", "ready");
-                            }
-
-                            @Override
-                            public void onBannerClick(BannerView bannerView) {
-
-                            }
-
-                            @Override
-                            public void onBannerFailedToLoad(BannerView bannerView, BannerErrorInfo bannerErrorInfo) {
-                                Log.d("SupportTest", "Banner Error" + bannerErrorInfo);
-                                unityAdView.setVisibility(View.GONE);
-                                loadBackupBannerAd();
-                            }
-
-                            @Override
-                            public void onBannerLeftApplication(BannerView bannerView) {
-
-                            }
-                        });
-                        unityAdView.addView(bottomBanner);
-                        bottomBanner.load();
-                        Log.d(TAG, adNetwork + " Banner Ad unit Id : " + unityBannerId);
-                        break;
-
                     case APPLOVIN:
                     case APPLOVIN_MAX:
                         RelativeLayout appLovinAdView = activity.findViewById(R.id.applovin_banner_view_container);
@@ -363,6 +295,10 @@ public class BannerAd {
                     case NONE:
                         //do nothing
                         break;
+
+                    default:
+                        Toast.makeText(activity, "Please Select correct ad network", Toast.LENGTH_SHORT).show();
+                        break;
                 }
                 Log.d(TAG, "Banner Ad is enabled");
             } else {
@@ -415,64 +351,6 @@ public class BannerAd {
                         });
                         Log.d(TAG, adNetwork + " Banner Ad unit Id : " + adMobBannerId);
                         break;
-
-                    case STARTAPP:
-                        RelativeLayout startAppAdView = activity.findViewById(R.id.startapp_banner_view_container);
-                        Banner banner = new Banner(activity, new BannerListener() {
-                            @Override
-                            public void onReceiveAd(View banner) {
-                                startAppAdView.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void onFailedToReceiveAd(View banner) {
-                                startAppAdView.setVisibility(View.GONE);
-                                Log.d(TAG, adNetwork + " failed load startapp banner ad : ");
-                            }
-
-                            @Override
-                            public void onImpression(View view) {
-
-                            }
-
-                            @Override
-                            public void onClick(View banner) {
-                            }
-                        });
-                        startAppAdView.addView(banner);
-                        break;
-
-                    case UNITY:
-                        RelativeLayout unityAdView = activity.findViewById(R.id.unity_banner_view_container);
-                        BannerView bottomBanner = new BannerView(activity, unityBannerId, new UnityBannerSize(UNITY_ADS_BANNER_WIDTH_MEDIUM, UNITY_ADS_BANNER_HEIGHT_MEDIUM));
-                        bottomBanner.setListener(new BannerView.IListener() {
-                            @Override
-                            public void onBannerLoaded(BannerView bannerView) {
-                                unityAdView.setVisibility(View.VISIBLE);
-                                Log.d("Unity_banner", "ready");
-                            }
-
-                            @Override
-                            public void onBannerClick(BannerView bannerView) {
-
-                            }
-
-                            @Override
-                            public void onBannerFailedToLoad(BannerView bannerView, BannerErrorInfo bannerErrorInfo) {
-                                Log.d("SupportTest", "Banner Error" + bannerErrorInfo);
-                                unityAdView.setVisibility(View.GONE);
-                            }
-
-                            @Override
-                            public void onBannerLeftApplication(BannerView bannerView) {
-
-                            }
-                        });
-                        unityAdView.addView(bottomBanner);
-                        bottomBanner.load();
-                        Log.d(TAG, adNetwork + " Banner Ad unit Id : " + unityBannerId);
-                        break;
-
                     case APPLOVIN:
                     case APPLOVIN_MAX:
                         RelativeLayout appLovinAdView = activity.findViewById(R.id.applovin_banner_view_container);
@@ -590,6 +468,9 @@ public class BannerAd {
                             }
                         });
                         Log.d(TAG, adNetwork + " Banner Ad unit Id : " + mopubBannerId);
+                        break;
+                    default:
+                        Toast.makeText(activity, "Please Select correct ad network", Toast.LENGTH_SHORT).show();
                         break;
                 }
                 Log.d(TAG, "Banner Ad is enabled");

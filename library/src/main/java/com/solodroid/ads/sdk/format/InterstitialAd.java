@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,13 +37,6 @@ import com.mopub.mobileads.MoPubErrorCode;
 import com.mopub.mobileads.MoPubInterstitial;
 import com.solodroid.ads.sdk.helper.AppLovinCustomEventInterstitial;
 import com.solodroid.ads.sdk.util.Tools;
-import com.startapp.sdk.adsbase.Ad;
-import com.startapp.sdk.adsbase.StartAppAd;
-import com.startapp.sdk.adsbase.adlisteners.AdEventListener;
-import com.unity3d.ads.IUnityAdsLoadListener;
-import com.unity3d.ads.IUnityAdsShowListener;
-import com.unity3d.ads.UnityAds;
-import com.unity3d.ads.UnityAdsShowOptions;
 
 import java.util.concurrent.TimeUnit;
 
@@ -53,7 +47,7 @@ public class InterstitialAd {
         private static final String TAG = "AdNetwork";
         private final Activity activity;
         private com.google.android.gms.ads.interstitial.InterstitialAd adMobInterstitialAd;
-        private StartAppAd startAppAd;
+
         private MaxInterstitialAd maxInterstitialAd;
         public MoPubInterstitial mInterstitial;
         public AppLovinInterstitialAdDialog appLovinInterstitialAdDialog;
@@ -180,37 +174,6 @@ public class InterstitialAd {
                         });
                         break;
 
-                    case STARTAPP:
-                        startAppAd = new StartAppAd(activity);
-                        startAppAd.loadAd(new AdEventListener() {
-                            @Override
-                            public void onReceiveAd(@NonNull Ad ad) {
-                                Log.d(TAG, "Startapp Interstitial Ad loaded");
-                            }
-
-                            @Override
-                            public void onFailedToReceiveAd(@Nullable Ad ad) {
-                                Log.d(TAG, "Failed to load Startapp Interstitial Ad");
-                                loadBackupInterstitialAd();
-                            }
-                        });
-                        break;
-
-                    case UNITY:
-                        UnityAds.load(unityInterstitialId, new IUnityAdsLoadListener() {
-                            @Override
-                            public void onUnityAdsAdLoaded(String placementId) {
-                                Log.d(TAG, "unity interstitial ad loaded");
-                            }
-
-                            @Override
-                            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
-                                Log.e(TAG, "Unity Ads failed to load ad for " + placementId + " with error: [" + error + "] " + message);
-                                loadBackupInterstitialAd();
-                            }
-                        });
-                        break;
-
                     case APPLOVIN:
                     case APPLOVIN_MAX:
                         maxInterstitialAd = new MaxInterstitialAd(appLovinInterstitialId, activity);
@@ -303,6 +266,10 @@ public class InterstitialAd {
                             }
                         });
                         mInterstitial.load();
+                        break;
+
+                    default:
+                        Toast.makeText(activity, "Please Select correct ad network", Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -344,37 +311,6 @@ public class InterstitialAd {
                             }
                         });
                         break;
-
-                    case STARTAPP:
-                        startAppAd = new StartAppAd(activity);
-                        startAppAd.loadAd(new AdEventListener() {
-                            @Override
-                            public void onReceiveAd(@NonNull Ad ad) {
-                                Log.d(TAG, "Startapp Interstitial Ad loaded");
-                            }
-
-                            @Override
-                            public void onFailedToReceiveAd(@Nullable Ad ad) {
-                                Log.d(TAG, "Failed to load Startapp Interstitial Ad");
-                            }
-                        });
-                        Log.d(TAG, "load StartApp as backup Ad");
-                        break;
-
-                    case UNITY:
-                        UnityAds.load(unityInterstitialId, new IUnityAdsLoadListener() {
-                            @Override
-                            public void onUnityAdsAdLoaded(String placementId) {
-                                Log.d(TAG, "unity interstitial ad loaded");
-                            }
-
-                            @Override
-                            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
-                                Log.e(TAG, "Unity Ads failed to load ad for " + placementId + " with error: [" + error + "] " + message);
-                            }
-                        });
-                        break;
-
                     case APPLOVIN:
                     case APPLOVIN_MAX:
                         maxInterstitialAd = new MaxInterstitialAd(appLovinInterstitialId, activity);
@@ -469,6 +405,10 @@ public class InterstitialAd {
                     case NONE:
                         //do nothing
                         break;
+
+                    default:
+                        Toast.makeText(activity, "Please Select correct ad network", Toast.LENGTH_SHORT).show();
+                        break;
                 }
             }
         }
@@ -487,40 +427,6 @@ public class InterstitialAd {
                             }
                             break;
 
-                        case STARTAPP:
-                            if (startAppAd != null) {
-                                startAppAd.showAd();
-                                Log.d(TAG, "startapp interstitial not null [counter] : " + counter);
-                            } else {
-                                showBackupInterstitialAd();
-                                Log.d(TAG, "startapp interstitial null");
-                            }
-                            break;
-
-                        case UNITY:
-                            UnityAds.show(activity, unityInterstitialId, new UnityAdsShowOptions(), new IUnityAdsShowListener() {
-                                @Override
-                                public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
-                                    Log.d(TAG, "unity ads show failure");
-                                    showBackupInterstitialAd();
-                                }
-
-                                @Override
-                                public void onUnityAdsShowStart(String placementId) {
-
-                                }
-
-                                @Override
-                                public void onUnityAdsShowClick(String placementId) {
-
-                                }
-
-                                @Override
-                                public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
-
-                                }
-                            });
-                            break;
 
                         case APPLOVIN:
                         case APPLOVIN_MAX:
@@ -548,6 +454,9 @@ public class InterstitialAd {
                             Log.d(TAG, "show " + adNetwork + " Interstitial Id : " + mopubInterstitialId);
                             Log.d(TAG, "counter : " + counter);
                             break;
+                        default:
+                            Toast.makeText(activity, "Please Select correct ad network", Toast.LENGTH_SHORT).show();
+                            break;
                     }
                     counter = 1;
                 } else {
@@ -566,37 +475,6 @@ public class InterstitialAd {
                             adMobInterstitialAd.show(activity);
                         }
                         break;
-
-                    case STARTAPP:
-                        if (startAppAd != null) {
-                            startAppAd.showAd();
-                        }
-                        break;
-
-                    case UNITY:
-                        UnityAds.show(activity, unityInterstitialId, new UnityAdsShowOptions(), new IUnityAdsShowListener() {
-                            @Override
-                            public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
-                                Log.d(TAG, "unity ads show failure");
-                            }
-
-                            @Override
-                            public void onUnityAdsShowStart(String placementId) {
-
-                            }
-
-                            @Override
-                            public void onUnityAdsShowClick(String placementId) {
-
-                            }
-
-                            @Override
-                            public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
-
-                            }
-                        });
-                        break;
-
                     case APPLOVIN:
                     case APPLOVIN_MAX:
                         if (maxInterstitialAd.isReady()) {
@@ -618,6 +496,10 @@ public class InterstitialAd {
 
                     case NONE:
                         //do nothing
+                        break;
+
+                    default:
+                        Toast.makeText(activity, "Please Select correct ad network", Toast.LENGTH_SHORT).show();
                         break;
                 }
             }

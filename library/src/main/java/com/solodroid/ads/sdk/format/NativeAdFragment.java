@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -36,10 +37,6 @@ import com.solodroid.ads.sdk.util.Constant;
 import com.solodroid.ads.sdk.util.NativeTemplateStyle;
 import com.solodroid.ads.sdk.util.TemplateView;
 import com.solodroid.ads.sdk.util.Tools;
-import com.startapp.sdk.ads.nativead.NativeAdDetails;
-import com.startapp.sdk.ads.nativead.NativeAdPreferences;
-import com.startapp.sdk.ads.nativead.StartAppNativeAd;
-import com.startapp.sdk.adsbase.adlisteners.AdEventListener;
 
 import java.util.ArrayList;
 
@@ -187,57 +184,6 @@ public class NativeAdFragment {
                         }
                         break;
 
-                    case STARTAPP:
-                        if (startapp_native_ad.getVisibility() != View.VISIBLE) {
-                            StartAppNativeAd startAppNativeAd = new StartAppNativeAd(activity);
-                            NativeAdPreferences nativePrefs = new NativeAdPreferences()
-                                    .setAdsNumber(3)
-                                    .setAutoBitmapDownload(true)
-                                    .setPrimaryImageSize(Constant.STARTAPP_IMAGE_MEDIUM);
-                            AdEventListener adListener = new AdEventListener() {
-                                @Override
-                                public void onReceiveAd(@NonNull com.startapp.sdk.adsbase.Ad arg0) {
-                                    Log.d(TAG, "StartApp Native Ad loaded");
-                                    startapp_native_ad.setVisibility(View.VISIBLE);
-                                    native_ad_view_container.setVisibility(View.VISIBLE);
-                                    //noinspection rawtypes
-                                    ArrayList ads = startAppNativeAd.getNativeAds(); // get NativeAds list
-
-                                    // Print all ads details to log
-                                    for (Object ad : ads) {
-                                        Log.d(TAG, "StartApp Native Ad " + ad.toString());
-                                    }
-
-                                    NativeAdDetails ad = (NativeAdDetails) ads.get(0);
-                                    if (ad != null) {
-                                        startapp_native_image.setImageBitmap(ad.getImageBitmap());
-                                        startapp_native_icon.setImageBitmap(ad.getSecondaryImageBitmap());
-                                        startapp_native_title.setText(ad.getTitle());
-                                        startapp_native_description.setText(ad.getDescription());
-                                        startapp_native_button.setText(ad.isApp() ? "Install" : "Open");
-                                        ad.registerViewForInteraction(startapp_native_ad);
-                                    }
-
-                                    if (darkTheme) {
-                                        startapp_native_background.setBackgroundResource(R.color.colorBackgroundDark);
-                                    } else {
-                                        startapp_native_background.setBackgroundResource(R.color.colorBackgroundLight);
-                                    }
-
-                                }
-
-                                @Override
-                                public void onFailedToReceiveAd(com.startapp.sdk.adsbase.Ad arg0) {
-                                    loadBackupNativeAd();
-                                    Log.d(TAG, "StartApp Native Ad failed loaded");
-                                }
-                            };
-                            startAppNativeAd.loadAd(nativePrefs, adListener);
-                        } else {
-                            Log.d(TAG, "StartApp Native Ad has been loaded");
-                        }
-                        break;
-
                     case APPLOVIN_MAX:
                     case APPLOVIN:
                         if (applovin_native_ad.getVisibility() != View.VISIBLE) {
@@ -279,6 +225,10 @@ public class NativeAdFragment {
 
                     case UNITY:
                         //do nothing
+                        break;
+
+                    default:
+                        Toast.makeText(activity, "Please Select correct ad network", Toast.LENGTH_SHORT).show();
                         break;
 
                 }
@@ -339,57 +289,6 @@ public class NativeAdFragment {
                         }
                         break;
 
-                    case STARTAPP:
-                        if (startapp_native_ad.getVisibility() != View.VISIBLE) {
-                            StartAppNativeAd startAppNativeAd = new StartAppNativeAd(activity);
-                            NativeAdPreferences nativePrefs = new NativeAdPreferences()
-                                    .setAdsNumber(3)
-                                    .setAutoBitmapDownload(true)
-                                    .setPrimaryImageSize(Constant.STARTAPP_IMAGE_MEDIUM);
-                            AdEventListener adListener = new AdEventListener() {
-                                @Override
-                                public void onReceiveAd(@NonNull com.startapp.sdk.adsbase.Ad arg0) {
-                                    Log.d(TAG, "StartApp Native Ad loaded");
-                                    startapp_native_ad.setVisibility(View.VISIBLE);
-                                    native_ad_view_container.setVisibility(View.VISIBLE);
-                                    //noinspection rawtypes
-                                    ArrayList ads = startAppNativeAd.getNativeAds(); // get NativeAds list
-
-                                    // Print all ads details to log
-                                    for (Object ad : ads) {
-                                        Log.d(TAG, "StartApp Native Ad " + ad.toString());
-                                    }
-
-                                    NativeAdDetails ad = (NativeAdDetails) ads.get(0);
-                                    if (ad != null) {
-                                        startapp_native_image.setImageBitmap(ad.getImageBitmap());
-                                        startapp_native_title.setText(ad.getTitle());
-                                        startapp_native_description.setText(ad.getDescription());
-                                        startapp_native_button.setText(ad.isApp() ? "Install" : "Open");
-                                        ad.registerViewForInteraction(startapp_native_ad);
-                                    }
-
-                                    if (darkTheme) {
-                                        startapp_native_background.setBackgroundResource(R.color.colorBackgroundDark);
-                                    } else {
-                                        startapp_native_background.setBackgroundResource(R.color.colorBackgroundLight);
-                                    }
-
-                                }
-
-                                @Override
-                                public void onFailedToReceiveAd(com.startapp.sdk.adsbase.Ad arg0) {
-                                    startapp_native_ad.setVisibility(View.GONE);
-                                    native_ad_view_container.setVisibility(View.GONE);
-                                    Log.d(TAG, "StartApp Native Ad failed loaded");
-                                }
-                            };
-                            startAppNativeAd.loadAd(nativePrefs, adListener);
-                        } else {
-                            Log.d(TAG, "StartApp Native Ad has been loaded");
-                        }
-                        break;
-
                     case APPLOVIN_MAX:
                     case APPLOVIN:
                         if (applovin_native_ad.getVisibility() != View.VISIBLE) {
@@ -432,6 +331,10 @@ public class NativeAdFragment {
 
                     case NONE:
                         native_ad_view_container.setVisibility(View.GONE);
+                        break;
+
+                    default:
+                        Toast.makeText(activity, "Please Select correct ad network", Toast.LENGTH_SHORT).show();
                         break;
 
                 }
